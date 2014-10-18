@@ -1,4 +1,5 @@
 require "qualaroo/version"
+require "httparty"
 
 module Qualaroo
   class Client
