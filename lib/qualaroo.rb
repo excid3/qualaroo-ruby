@@ -7,8 +7,13 @@ module Qualaroo
     base_uri 'app.qualaroo.com/api/v1'
     format :json
 
-    def initialize(key, secret)
-      @auth = {username: key, password: secret}
+    attr_accessor :api_key, :api_secret
+
+    def initialize(api_key, api_secret)
+      @auth = {
+        username: api_key || self.class.api_key || ENV['QUALAROO_API_KEY'],
+        password: api_secret || self.class.api_secret || ENV['QUALAROO_API_SECRET']
+      }
     end
 
     def responses(nudge_id, query={}, options={})
@@ -26,6 +31,14 @@ module Qualaroo
       end
 
       all_responses
+    end
+
+    class << self
+      attr_accessor :api_key, :api_secret
+
+      def method_missing(sym, *args, &block)
+        new(api_key, api_secret).send(sym, *args, &block)
+      end
     end
   end
 end
